@@ -12,6 +12,14 @@ func RunMigration(mysqlDB *gorm.DB) {
 	err := mysqlDB.AutoMigrate(
 		&daos.Book{},
 		&daos.User{},
+		&daos.Alamat{},
+		&daos.Toko{},
+		&daos.Trx{},
+		&daos.DetailTrx{},
+		&daos.LogProduk{},
+		&daos.Produk{},
+		&daos.FotoProduk{},
+		&daos.Category{},
 	)
 
 	var count int64
