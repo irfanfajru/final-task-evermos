@@ -14,12 +14,12 @@ func RunMigration(mysqlDB *gorm.DB) {
 		&daos.User{},
 		&daos.Alamat{},
 		&daos.Toko{},
+		&daos.Category{},
+		&daos.Produk{},
+		&daos.FotoProduk{},
 		&daos.Trx{},
 		&daos.DetailTrx{},
 		&daos.LogProduk{},
-		&daos.Produk{},
-		&daos.FotoProduk{},
-		&daos.Category{},
 	)
 
 	var count int64

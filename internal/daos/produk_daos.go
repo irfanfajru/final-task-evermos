@@ -13,5 +13,14 @@ type (
 		HargaKonsumen string `gorm:"size:255"`
 		Stok          uint
 		Deskripsi     string `grom:"type:text"`
+
+		// relation belongs to toko
+		Toko Toko `gorm:"foreignKey:Idtoko"`
+
+		// relation belongs to category
+		Category Category `gorm:"foreignKey:IdCategory"`
+
+		// relation one to many to foto produk
+		FotoProduk []FotoProduk `gorm:"foreignKey:IdProduk"`
 	}
 )

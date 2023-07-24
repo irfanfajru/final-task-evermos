@@ -8,5 +8,8 @@ type (
 		IdUser   uint
 		NamaToko string `gorm:"size:255;unique"`
 		UrlFoto  string `gorm:"size:255"`
+
+		// relation to user one to one
+		User User `gorm:"foreignKey:IdUser"`
 	}
 )

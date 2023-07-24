@@ -12,5 +12,11 @@ type (
 		IdToko      uint
 		Kuantitas   uint
 		HargaTotal  uint
+
+		// relation belongs to log produk
+		LogProduk LogProduk `gorm:"foreignKey:IdLogProduk"`
+
+		// relation belongs to toko
+		Toko Toko `gorm:"foreignKey:IdToko"`
 	}
 )
