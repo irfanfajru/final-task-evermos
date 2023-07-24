@@ -1,6 +1,37 @@
 package mysql
 
-import "tugas_akhir_example/internal/daos"
+import (
+	"tugas_akhir_example/internal/daos"
+	"tugas_akhir_example/internal/utils"
+)
+
+var usersSeed = []daos.User{
+	{
+		Nama:         "Muhammad Irfan Fajru Ramadhan",
+		KataSandi:    utils.HashPassword("123"),
+		Notelp:       "082134567891",
+		TanggalLahir: utils.DateTimeToDate("2023-12-02"),
+		JenisKelamin: "Laki-Laki",
+		Tentang:      "Back end Developer",
+		Pekerjaan:    "Mahasiswa",
+		Email:        "irfan@mail.com",
+		IdProvinsi:   "35",
+		IdKota:       "3524",
+	},
+	{
+		Nama:         "Admin",
+		KataSandi:    utils.HashPassword("123"),
+		Notelp:       "123",
+		TanggalLahir: utils.DateTimeToDate("2023-12-02"),
+		JenisKelamin: "Laki-Laki",
+		Tentang:      "Back end Developer",
+		Pekerjaan:    "Mahasiswa",
+		Email:        "admin@mail.com",
+		IdProvinsi:   "35",
+		IdKota:       "3524",
+		IsAdmin:      true,
+	},
+}
 
 var booksSeed = []daos.Book{
 	{
