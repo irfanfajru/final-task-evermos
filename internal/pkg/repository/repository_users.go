@@ -9,6 +9,7 @@ import (
 
 type UsersRepository interface {
 	FindByCredentials(ctx context.Context, telp string) (res daos.User, err error)
+	Create(ctx context.Context, data daos.User) (res uint, err error)
 }
 
 type UsersRepositoryImpl struct {
@@ -26,4 +27,13 @@ func (alr *UsersRepositoryImpl) FindByCredentials(ctx context.Context, telp stri
 		return res, err
 	}
 	return res, nil
+}
+
+func (alr *UsersRepositoryImpl) Create(ctx context.Context, data daos.User) (res uint, err error) {
+	result := alr.db.Create(&data).WithContext(ctx)
+	if result.Error != nil {
+		return res, result.Error
+	}
+
+	return data.ID, nil
 }

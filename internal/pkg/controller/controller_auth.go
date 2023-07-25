@@ -10,6 +10,7 @@ import (
 
 type AuthController interface {
 	Login(ctx *fiber.Ctx) error
+	Register(ctx *fiber.Ctx) error
 }
 
 type AuthControllerImpl struct {
@@ -22,6 +23,7 @@ func NewAuthController(UsersUseCase usecase.UsersUseCase) AuthController {
 	}
 }
 
+// login
 func (uc *AuthControllerImpl) Login(ctx *fiber.Ctx) error {
 	c := ctx.Context()
 	data := new(dto.LoginReq)
@@ -29,7 +31,22 @@ func (uc *AuthControllerImpl) Login(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("post", err))
 	}
 
-	res, err := uc.UsersUseCase.FindByCredentials(c, *data)
+	res, err := uc.UsersUseCase.Login(c, *data)
+	if err != nil {
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse("post", err.Err))
+	}
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("post", res))
+}
+
+// register
+func (uc *AuthControllerImpl) Register(ctx *fiber.Ctx) error {
+	c := ctx.Context()
+	data := new(dto.RegisterReq)
+	if err := ctx.BodyParser(data); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("post", err))
+	}
+
+	res, err := uc.UsersUseCase.Register(c, *data)
 	if err != nil {
 		return ctx.Status(err.Code).JSON(helper.ErrorResponse("post", err.Err))
 	}

@@ -3,9 +3,9 @@ package utils
 import "time"
 
 // @TODO : make function parsing date
-func DateTimeToDate(dateTime string) time.Time {
-	date, _ := time.Parse("2006-01-02", dateTime)
-	return date
+func ParseDate(date string) time.Time {
+	dateParsed, _ := time.Parse("02/01/2006", date)
+	return dateParsed
 }
 
 func DateResponse(time time.Time) string {

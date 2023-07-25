@@ -11,9 +11,10 @@ import (
 
 func AuthRoute(r fiber.Router, containerConf *container.Container) {
 	repo := repository.NewUsersRepository(containerConf.Mysqldb)
-	useCase := usecase.NewUsersUseCase(repo)
+	useCase := usecase.NewUsersUseCase(repo, containerConf.Apps.SecretJwt)
 	controller := controller.NewAuthController(useCase)
 
 	authAPI := r.Group("/auth")
 	authAPI.Post("/login", controller.Login)
+	authAPI.Post("/register", controller.Register)
 }

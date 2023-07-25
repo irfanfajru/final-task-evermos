@@ -10,7 +10,7 @@ var usersSeed = []daos.User{
 		Nama:         "Admin",
 		KataSandi:    utils.HashPassword("123456"),
 		Notelp:       "08961231235",
-		TanggalLahir: utils.DateTimeToDate("2023-12-02"),
+		TanggalLahir: utils.ParseDate("02/01/2006"),
 		JenisKelamin: "Laki-Laki",
 		Tentang:      "Admin",
 		Pekerjaan:    "Admin",

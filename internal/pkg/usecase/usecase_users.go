@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"tugas_akhir_example/internal/daos"
 	"tugas_akhir_example/internal/helper"
 	"tugas_akhir_example/internal/pkg/dto"
 	"tugas_akhir_example/internal/pkg/repository"
@@ -14,20 +15,23 @@ import (
 )
 
 type UsersUseCase interface {
-	FindByCredentials(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct)
+	Login(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct)
+	Register(ctx context.Context, data dto.RegisterReq) (res string, err *helper.ErrorStruct)
 }
 
 type UsersUseCaseImpl struct {
 	UsersRepository repository.UsersRepository
+	jwtSecret       string
 }
 
-func NewUsersUseCase(UsersRepository repository.UsersRepository) UsersUseCase {
+func NewUsersUseCase(UsersRepository repository.UsersRepository, jwtSecret string) UsersUseCase {
 	return &UsersUseCaseImpl{
 		UsersRepository: UsersRepository,
+		jwtSecret:       jwtSecret,
 	}
 }
 
-func (alc *UsersUseCaseImpl) FindByCredentials(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct) {
+func (alc *UsersUseCaseImpl) Login(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct) {
 	if errValidate := helper.Validate.Struct(data); errValidate != nil {
 		log.Println(errValidate)
 		return res, &helper.ErrorStruct{
@@ -54,6 +58,8 @@ func (alc *UsersUseCaseImpl) FindByCredentials(ctx context.Context, data dto.Log
 		}
 	}
 
+	token := utils.CreateToken(resRepo, alc.jwtSecret)
+
 	res = dto.LoginResp{
 		Nama:         resRepo.Nama,
 		NoTelp:       resRepo.Notelp,
@@ -61,7 +67,38 @@ func (alc *UsersUseCaseImpl) FindByCredentials(ctx context.Context, data dto.Log
 		Tentang:      resRepo.Tentang,
 		Pekerjaan:    resRepo.Pekerjaan,
 		Email:        resRepo.Email,
-		Token:        "token",
+		Token:        token,
 	}
 	return res, nil
+}
+
+func (alc *UsersUseCaseImpl) Register(ctx context.Context, data dto.RegisterReq) (res string, err *helper.ErrorStruct) {
+	if errValidate := helper.Validate.Struct(data); errValidate != nil {
+		log.Println(errValidate)
+		return res, &helper.ErrorStruct{
+			Err:  errValidate,
+			Code: fiber.StatusBadRequest,
+		}
+	}
+
+	_, errRepo := alc.UsersRepository.Create(ctx, daos.User{
+		Nama:         data.Nama,
+		KataSandi:    utils.HashPassword(data.KataSandi),
+		Notelp:       data.NoTelp,
+		TanggalLahir: utils.ParseDate(data.TanggalLahir),
+		Pekerjaan:    data.Pekerjaan,
+		Email:        data.Email,
+		IdProvinsi:   data.IdProvinsi,
+		IdKota:       data.IdKota,
+	})
+
+	if errRepo != nil {
+		helper.Logger(currentfilepath, helper.LoggerLevelError, fmt.Sprintf("Error at Register : %s", errRepo.Error()))
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusBadRequest,
+			Err:  errRepo,
+		}
+	}
+
+	return "Register Succeed", nil
 }
