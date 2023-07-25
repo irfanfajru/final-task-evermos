@@ -12,4 +12,5 @@ func HTTPRouteInit(r *fiber.App, containerConf *container.Container) {
 	api := r.Group("/api/v1") // /api
 	route.AuthRoute(api, containerConf)
 	route.BooksRoute(api, containerConf)
+	route.UserRoute(api, containerConf)
 }

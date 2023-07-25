@@ -12,11 +12,13 @@ import (
 	"tugas_akhir_example/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type UsersUseCase interface {
 	Login(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct)
 	Register(ctx context.Context, data dto.RegisterReq) (res string, err *helper.ErrorStruct)
+	GetById(ctx context.Context, userId string) (res dto.User, err *helper.ErrorStruct)
 }
 
 type UsersUseCaseImpl struct {
@@ -101,4 +103,34 @@ func (alc *UsersUseCaseImpl) Register(ctx context.Context, data dto.RegisterReq)
 	}
 
 	return "Register Succeed", nil
+}
+
+func (alc *UsersUseCaseImpl) GetById(ctx context.Context, userId string) (res dto.User, err *helper.ErrorStruct) {
+	resRepo, errRepo := alc.UsersRepository.GetById(ctx, userId)
+	if errors.Is(errRepo, gorm.ErrRecordNotFound) {
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusNotFound,
+			Err:  errors.New("No Data Found"),
+		}
+	}
+
+	if errRepo != nil {
+		helper.Logger(currentfilepath, helper.LoggerLevelError, fmt.Sprintf("Error at GetById : %s", errRepo.Error()))
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusBadRequest,
+			Err:  errRepo,
+		}
+	}
+
+	res = dto.User{
+		Nama:         resRepo.Nama,
+		NoTelp:       resRepo.Notelp,
+		TanggalLahir: utils.DateResponse(resRepo.TanggalLahir),
+		Tentang:      resRepo.Tentang,
+		Pekerjaan:    resRepo.Pekerjaan,
+		Email:        resRepo.Email,
+		IdProvinsi:   resRepo.IdProvinsi,
+		IdKota:       resRepo.IdKota,
+	}
+	return res, nil
 }

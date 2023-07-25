@@ -25,3 +25,15 @@ type RegisterReq struct {
 	IdProvinsi   string `json:"id_provinsi" validate:"required"`
 	IdKota       string `json:"id_kota" validate:"required"`
 }
+
+type User struct {
+	Nama         string `json:"nama" `
+	KataSandi    string `json:"kata_sandi" `
+	NoTelp       string `json:"no_telp" `
+	TanggalLahir string `json:"tanggal_lahir" `
+	Pekerjaan    string `json:"pekerjaan" `
+	Tentang      string `json:"tentang"`
+	Email        string `json:"email" `
+	IdProvinsi   string `json:"id_provinsi" `
+	IdKota       string `json:"id_kota" `
+}

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 	"tugas_akhir_example/internal/daos"
 
@@ -12,7 +13,7 @@ func CreateToken(payload daos.User, secret string) string {
 	day := time.Hour * 24
 	// Create the JWT claims, which includes the user ID and expiry time
 	claims := jtoken.MapClaims{
-		"UserId":  payload.ID,
+		"UserId":  fmt.Sprintf("%v", payload.ID),
 		"IsAdmin": payload.IsAdmin,
 		"exp":     time.Now().Add(day * 1).Unix(),
 	}

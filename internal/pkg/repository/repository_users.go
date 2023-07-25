@@ -9,6 +9,7 @@ import (
 
 type UsersRepository interface {
 	FindByCredentials(ctx context.Context, telp string) (res daos.User, err error)
+	GetById(ctx context.Context, userId string) (res daos.User, err error)
 	Create(ctx context.Context, data daos.User) (res uint, err error)
 }
 
@@ -36,4 +37,11 @@ func (alr *UsersRepositoryImpl) Create(ctx context.Context, data daos.User) (res
 	}
 
 	return data.ID, nil
+}
+
+func (alr *UsersRepositoryImpl) GetById(ctx context.Context, userId string) (res daos.User, err error) {
+	if err := alr.db.First(&res, userId).WithContext(ctx).Error; err != nil {
+		return res, err
+	}
+	return res, nil
 }
