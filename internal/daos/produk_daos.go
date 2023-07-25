@@ -15,7 +15,7 @@ type (
 		Deskripsi     string `grom:"type:text"`
 
 		// relation belongs to toko
-		Toko Toko `gorm:"foreignKey:Idtoko"`
+		Toko Toko `gorm:"foreignKey:IdToko"`
 
 		// relation belongs to category
 		Category Category `gorm:"foreignKey:IdCategory"`

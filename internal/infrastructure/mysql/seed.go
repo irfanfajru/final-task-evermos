@@ -8,8 +8,8 @@ import (
 var usersSeed = []daos.User{
 	{
 		Nama:         "Admin",
-		KataSandi:    utils.HashPassword("123"),
-		Notelp:       "123",
+		KataSandi:    utils.HashPassword("123456"),
+		Notelp:       "08961231235",
 		TanggalLahir: utils.DateTimeToDate("2023-12-02"),
 		JenisKelamin: "Laki-Laki",
 		Tentang:      "Admin",
