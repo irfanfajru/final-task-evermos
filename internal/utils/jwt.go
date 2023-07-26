@@ -5,6 +5,7 @@ import (
 	"time"
 	"tugas_akhir_example/internal/daos"
 
+	"github.com/gofiber/fiber/v2"
 	jtoken "github.com/golang-jwt/jwt/v4"
 )
 
@@ -23,4 +24,11 @@ func CreateToken(payload daos.User, secret string) string {
 	t, _ := token.SignedString([]byte(secret))
 	// Return the token
 	return t
+}
+
+func GetUserIdJWT(ctx *fiber.Ctx) string {
+	user := ctx.Locals("user").(*jtoken.Token)
+	claims := user.Claims.(jtoken.MapClaims)
+	userId := claims["UserId"].(string)
+	return userId
 }

@@ -15,6 +15,8 @@ func UserRoute(r fiber.Router, containerConf *container.Container) {
 	useCase := usecase.NewUsersUseCase(repo, containerConf.Apps.SecretJwt)
 	controller := controller.NewUserController(useCase)
 	authMiddleware := utils.NewAuthMiddleware(containerConf.Apps.SecretJwt)
+
 	userAPI := r.Group("/user")
 	userAPI.Get("", authMiddleware, controller.GetMyProfile)
+	userAPI.Put("", authMiddleware, controller.Update)
 }

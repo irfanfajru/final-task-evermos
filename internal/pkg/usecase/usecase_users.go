@@ -19,6 +19,7 @@ type UsersUseCase interface {
 	Login(ctx context.Context, data dto.LoginReq) (res dto.LoginResp, err *helper.ErrorStruct)
 	Register(ctx context.Context, data dto.RegisterReq) (res string, err *helper.ErrorStruct)
 	GetById(ctx context.Context, userId string) (res dto.User, err *helper.ErrorStruct)
+	Update(ctx context.Context, userId string, data dto.UpdateUserReq) (res string, err *helper.ErrorStruct)
 }
 
 type UsersUseCaseImpl struct {
@@ -133,4 +134,35 @@ func (alc *UsersUseCaseImpl) GetById(ctx context.Context, userId string) (res dt
 		IdKota:       resRepo.IdKota,
 	}
 	return res, nil
+}
+
+func (alc *UsersUseCaseImpl) Update(ctx context.Context, userId string, data dto.UpdateUserReq) (res string, err *helper.ErrorStruct) {
+	if errValidate := helper.Validate.Struct(data); errValidate != nil {
+		log.Println(errValidate)
+		return res, &helper.ErrorStruct{
+			Err:  errValidate,
+			Code: fiber.StatusBadRequest,
+		}
+	}
+
+	resRepo, errRepo := alc.UsersRepository.Update(ctx, userId, daos.User{
+		Nama:         data.Nama,
+		KataSandi:    utils.HashPassword(data.KataSandi),
+		Notelp:       data.NoTelp,
+		TanggalLahir: utils.ParseDate(data.TanggalLahir),
+		Pekerjaan:    data.Pekerjaan,
+		Email:        data.Email,
+		IdProvinsi:   data.IdProvinsi,
+		IdKota:       data.IdKota,
+	})
+
+	if errRepo != nil {
+		helper.Logger(currentfilepath, helper.LoggerLevelError, fmt.Sprintf("Error at Update : %s", errRepo.Error()))
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusBadRequest,
+			Err:  errRepo,
+		}
+	}
+
+	return resRepo, nil
 }
