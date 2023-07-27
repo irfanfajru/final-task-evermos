@@ -10,10 +10,21 @@ import (
 )
 
 // Middleware JWT function
-func NewAuthMiddleware(secret string) fiber.Handler {
+func NewAuthMiddleware(secret string, roles ...string) fiber.Handler {
+	for _, role := range roles {
+		if role == "admin" {
+			return jwtware.New(jwtware.Config{
+				TokenLookup:    "header:token",
+				SigningKey:     []byte(secret),
+				SuccessHandler: AdminRoleMiddleware,
+				ErrorHandler:   ErrorJWTHandler,
+			})
+		}
+	}
 	return jwtware.New(jwtware.Config{
-		TokenLookup: "header:token",
-		SigningKey:  []byte(secret),
+		TokenLookup:  "header:token",
+		SigningKey:   []byte(secret),
+		ErrorHandler: ErrorJWTHandler,
 	})
 }
 
@@ -25,5 +36,12 @@ func AdminRoleMiddleware(ctx *fiber.Ctx) error {
 	}
 	return ctx.Status(fiber.StatusUnauthorized).JSON(
 		helper.ErrorResponse(string(ctx.Context().Method()), errors.New("Unauthorized")),
+	)
+}
+
+// error jwt handler
+func ErrorJWTHandler(ctx *fiber.Ctx, err error) error {
+	return ctx.Status(fiber.StatusUnauthorized).JSON(
+		helper.ErrorResponse(string(ctx.Context().Method()), err),
 	)
 }
