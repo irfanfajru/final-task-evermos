@@ -14,4 +14,8 @@ type (
 		// relation belongsTo user
 		User User `gorm:"foreignKey:IdUser"`
 	}
+
+	FilterAlamat struct {
+		JudulAlamat string
+	}
 )
