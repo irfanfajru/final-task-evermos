@@ -13,4 +13,5 @@ func HTTPRouteInit(r *fiber.App, containerConf *container.Container) {
 	route.AuthRoute(api, containerConf)
 	route.UserRoute(api, containerConf)
 	route.AlamatRoute(api, containerConf)
+	route.CategoryRoute(api, containerConf)
 }

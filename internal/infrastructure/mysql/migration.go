@@ -10,7 +10,6 @@ import (
 
 func RunMigration(mysqlDB *gorm.DB) {
 	err := mysqlDB.AutoMigrate(
-		&daos.Book{},
 		&daos.User{},
 		&daos.Alamat{},
 		&daos.Toko{},

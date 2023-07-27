@@ -32,3 +32,9 @@ func GetUserIdJWT(ctx *fiber.Ctx) string {
 	userId := claims["UserId"].(string)
 	return userId
 }
+
+func IsAdminJWT(ctx *fiber.Ctx) bool {
+	user := ctx.Locals("user").(*jtoken.Token)
+	claims := user.Claims.(jtoken.MapClaims)
+	return claims["IsAdmin"].(bool)
+}
