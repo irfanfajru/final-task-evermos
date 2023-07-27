@@ -33,7 +33,7 @@ func (uc *AlamatControllerImpl) GetMyAlamat(ctx *fiber.Ctx) error {
 	userId := utils.GetUserIdJWT(ctx)
 	filter := new(dto.AlamatFilter)
 	if err := ctx.QueryParser(filter); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("GET", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.AlamatUseCase.GetMyAlamat(c, userId, dto.AlamatFilter{
@@ -41,9 +41,9 @@ func (uc *AlamatControllerImpl) GetMyAlamat(ctx *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("get", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("get", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 func (uc *AlamatControllerImpl) GetMyAlamatById(ctx *fiber.Ctx) error {
@@ -51,15 +51,15 @@ func (uc *AlamatControllerImpl) GetMyAlamatById(ctx *fiber.Ctx) error {
 	userId := utils.GetUserIdJWT(ctx)
 	alamatId := ctx.Params("id", "")
 	if alamatId == "" || alamatId == ":id" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("get", errors.New("Bad request")))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), errors.New("Bad request")))
 	}
 
 	res, err := uc.AlamatUseCase.GetMyAlamatById(c, userId, alamatId)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("get", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("get", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 func (uc *AlamatControllerImpl) CreateAlamat(ctx *fiber.Ctx) error {
@@ -68,15 +68,15 @@ func (uc *AlamatControllerImpl) CreateAlamat(ctx *fiber.Ctx) error {
 	data := new(dto.CreateAlamatReq)
 
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("post", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.AlamatUseCase.CreateAlamat(c, userId, *data)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("post", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(helper.SuccessResponse("post", res))
+	return ctx.Status(fiber.StatusCreated).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 func (uc *AlamatControllerImpl) UpdateAlamat(ctx *fiber.Ctx) error {
@@ -84,20 +84,20 @@ func (uc *AlamatControllerImpl) UpdateAlamat(ctx *fiber.Ctx) error {
 	userId := utils.GetUserIdJWT(ctx)
 	alamatId := ctx.Params("id", "")
 	if alamatId == "" || alamatId == ":id" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("put", errors.New("Bad request")))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), errors.New("Bad request")))
 	}
 
 	data := new(dto.UpdateAlamatReq)
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("put", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.AlamatUseCase.UpdateAlamat(c, alamatId, userId, *data)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("put", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("put", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 func (uc *AlamatControllerImpl) DeleteAlamat(ctx *fiber.Ctx) error {
@@ -105,14 +105,14 @@ func (uc *AlamatControllerImpl) DeleteAlamat(ctx *fiber.Ctx) error {
 	alamatId := ctx.Params("id")
 	userId := utils.GetUserIdJWT(ctx)
 	if alamatId == "" || alamatId == "id" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("delete", errors.New("Bad request")))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), errors.New("Bad request")))
 	}
 
 	res, err := uc.AlamatUseCase.DeleteAlamat(c, alamatId, userId)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("delete", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("delete", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 
 }

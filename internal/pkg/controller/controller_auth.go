@@ -28,14 +28,14 @@ func (uc *AuthControllerImpl) Login(ctx *fiber.Ctx) error {
 	c := ctx.Context()
 	data := new(dto.LoginReq)
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("post", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.UsersUseCase.Login(c, *data)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("post", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("post", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 // register
@@ -43,12 +43,12 @@ func (uc *AuthControllerImpl) Register(ctx *fiber.Ctx) error {
 	c := ctx.Context()
 	data := new(dto.RegisterReq)
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("post", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.UsersUseCase.Register(c, *data)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("post", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("post", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }

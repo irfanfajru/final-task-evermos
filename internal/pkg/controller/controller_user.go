@@ -29,7 +29,7 @@ func (uc *UserControllerImpl) GetMyProfile(ctx *fiber.Ctx) error {
 	userId := utils.GetUserIdJWT(ctx)
 	res, _ := uc.UsersUseCase.GetById(c, userId)
 
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("get", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
 
 func (uc *UserControllerImpl) Update(ctx *fiber.Ctx) error {
@@ -37,12 +37,12 @@ func (uc *UserControllerImpl) Update(ctx *fiber.Ctx) error {
 	userId := utils.GetUserIdJWT(ctx)
 	data := new(dto.UpdateUserReq)
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse("put", err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
 	}
 
 	res, err := uc.UsersUseCase.Update(c, userId, *data)
 	if err != nil {
-		return ctx.Status(err.Code).JSON(helper.ErrorResponse("put", err.Err))
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
-	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse("put", res))
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
