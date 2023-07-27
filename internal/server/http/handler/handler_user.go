@@ -12,7 +12,8 @@ import (
 
 func UserRoute(r fiber.Router, containerConf *container.Container) {
 	repo := repository.NewUsersRepository(containerConf.Mysqldb)
-	useCase := usecase.NewUsersUseCase(repo, containerConf.Apps.SecretJwt)
+	tokoRepo := repository.NewTokoRepository(containerConf.Mysqldb)
+	useCase := usecase.NewUsersUseCase(repo, tokoRepo, containerConf.Apps.SecretJwt)
 	controller := controller.NewUserController(useCase)
 	authMiddleware := utils.NewAuthMiddleware(containerConf.Apps.SecretJwt)
 

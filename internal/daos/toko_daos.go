@@ -12,4 +12,9 @@ type (
 		// relation to user one to one
 		User User `gorm:"foreignKey:IdUser"`
 	}
+
+	FilterToko struct {
+		Limit, Offset int
+		NamaToko      string
+	}
 )

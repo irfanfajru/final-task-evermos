@@ -24,12 +24,14 @@ type UsersUseCase interface {
 
 type UsersUseCaseImpl struct {
 	UsersRepository repository.UsersRepository
+	TokoRepository  repository.TokoRepository
 	jwtSecret       string
 }
 
-func NewUsersUseCase(UsersRepository repository.UsersRepository, jwtSecret string) UsersUseCase {
+func NewUsersUseCase(UsersRepository repository.UsersRepository, TokoRepository repository.TokoRepository, jwtSecret string) UsersUseCase {
 	return &UsersUseCaseImpl{
 		UsersRepository: UsersRepository,
+		TokoRepository:  TokoRepository,
 		jwtSecret:       jwtSecret,
 	}
 }
@@ -84,7 +86,7 @@ func (alc *UsersUseCaseImpl) Register(ctx context.Context, data dto.RegisterReq)
 		}
 	}
 
-	_, errRepo := alc.UsersRepository.Create(ctx, daos.User{
+	userId, errRepo := alc.UsersRepository.Create(ctx, daos.User{
 		Nama:         data.Nama,
 		KataSandi:    utils.HashPassword(data.KataSandi),
 		Notelp:       data.NoTelp,
@@ -100,6 +102,20 @@ func (alc *UsersUseCaseImpl) Register(ctx context.Context, data dto.RegisterReq)
 		return res, &helper.ErrorStruct{
 			Code: fiber.StatusBadRequest,
 			Err:  errRepo,
+		}
+	}
+
+	// create toko
+	_, errRepoToko := alc.TokoRepository.CreateToko(ctx, daos.Toko{
+		IdUser:   userId,
+		NamaToko: fmt.Sprintf("Toko %s", data.Nama),
+	})
+
+	if errRepoToko != nil {
+		helper.Logger(currentfilepath, helper.LoggerLevelError, fmt.Sprintf("Error at Register : %s", errRepo.Error()))
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusBadRequest,
+			Err:  errRepoToko,
 		}
 	}
 

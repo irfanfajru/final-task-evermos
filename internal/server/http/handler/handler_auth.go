@@ -11,7 +11,8 @@ import (
 
 func AuthRoute(r fiber.Router, containerConf *container.Container) {
 	repo := repository.NewUsersRepository(containerConf.Mysqldb)
-	useCase := usecase.NewUsersUseCase(repo, containerConf.Apps.SecretJwt)
+	repoToko := repository.NewTokoRepository(containerConf.Mysqldb)
+	useCase := usecase.NewUsersUseCase(repo, repoToko, containerConf.Apps.SecretJwt)
 	controller := controller.NewAuthController(useCase)
 
 	authAPI := r.Group("/auth")
