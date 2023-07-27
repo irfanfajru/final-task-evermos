@@ -23,12 +23,6 @@ func RunMigration(mysqlDB *gorm.DB) {
 	)
 
 	var count int64
-	if mysqlDB.Migrator().HasTable(&daos.Book{}) {
-		mysqlDB.Model(&daos.Book{}).Count(&count)
-		if count < 1 {
-			mysqlDB.CreateInBatches(booksSeed, len(booksSeed))
-		}
-	}
 	// seeder user
 	if mysqlDB.Migrator().HasTable(&daos.User{}) {
 		mysqlDB.Model(&daos.User{}).Count(&count)
