@@ -66,7 +66,7 @@ func (alc *UsersUseCaseImpl) Login(ctx context.Context, data dto.LoginReq) (res 
 	token := utils.CreateToken(resRepo, alc.jwtSecret)
 	apiWilayah := repository.NewWilayahRepository()
 	provRes, _ := apiWilayah.GetProvinceById(resRepo.IdProvinsi)
-	regRes, _ := apiWilayah.GetRegencyById(resRepo.IdProvinsi, resRepo.IdKota)
+	regRes, _ := apiWilayah.GetRegencyById(resRepo.IdKota)
 
 	res = dto.LoginResp{
 		Nama:         resRepo.Nama,
@@ -146,7 +146,7 @@ func (alc *UsersUseCaseImpl) GetById(ctx context.Context, userId string) (res dt
 
 	apiWilayah := repository.NewWilayahRepository()
 	provRes, _ := apiWilayah.GetProvinceById(resRepo.IdProvinsi)
-	regRes, _ := apiWilayah.GetRegencyById(resRepo.IdProvinsi, resRepo.IdKota)
+	regRes, _ := apiWilayah.GetRegencyById(resRepo.IdKota)
 
 	res = dto.User{
 		Nama:         resRepo.Nama,

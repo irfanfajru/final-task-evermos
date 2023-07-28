@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"tugas_akhir_example/internal/pkg/dto"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,7 +12,7 @@ type WilayahRepository interface {
 	GetAllProvince() (res []dto.Province, err error)
 	GetAllRegency(provinceId string) (res []dto.Regency, err error)
 	GetProvinceById(provinceId string) (res dto.Province, err error)
-	GetRegencyById(provinceId string, regencyId string) (res dto.Regency, err error)
+	GetRegencyById(regencyId string) (res dto.Regency, err error)
 }
 
 type WilayahRepositoryImpl struct {
@@ -33,9 +34,9 @@ func (alr *WilayahRepositoryImpl) GetAllProvince() (res []dto.Province, err erro
 		return res, err
 	}
 
-	statusCode, body, errs := agent.Bytes()
-	if statusCode != 200 {
-		return res, errs[0]
+	statusCode, body, _ := agent.Bytes()
+	if statusCode == 404 {
+		return res, errors.New("not found")
 	}
 
 	err = json.Unmarshal(body, &res)
@@ -55,9 +56,9 @@ func (alr *WilayahRepositoryImpl) GetAllRegency(provinceId string) (res []dto.Re
 		return res, err
 	}
 
-	statusCode, body, errs := agent.Bytes()
-	if statusCode != 200 {
-		return res, errs[0]
+	statusCode, body, _ := agent.Bytes()
+	if statusCode == 404 {
+		return res, errors.New("Not found")
 	}
 
 	err = json.Unmarshal(body, &res)
@@ -69,31 +70,44 @@ func (alr *WilayahRepositoryImpl) GetAllRegency(provinceId string) (res []dto.Re
 }
 
 func (alr *WilayahRepositoryImpl) GetProvinceById(provinceId string) (res dto.Province, err error) {
-	provinces, err := alr.GetAllProvince()
+	agent := fiber.AcquireAgent()
+	agent.Request().Header.SetMethod("GET")
+	agent.Request().SetRequestURI(alr.API + "/province/" + provinceId + ".json")
+	err = agent.Parse()
 	if err != nil {
 		return res, err
 	}
 
-	for _, v := range provinces {
-		if v.ID == provinceId {
-			res = v
-			break
-		}
+	statusCode, body, _ := agent.Bytes()
+	if statusCode == 404 {
+		return res, errors.New("Not found")
 	}
+
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return res, err
+	}
+
 	return res, nil
 }
 
-func (alr *WilayahRepositoryImpl) GetRegencyById(provinceId string, regencyId string) (res dto.Regency, err error) {
-	regencies, err := alr.GetAllRegency(provinceId)
+func (alr *WilayahRepositoryImpl) GetRegencyById(regencyId string) (res dto.Regency, err error) {
+	agent := fiber.AcquireAgent()
+	agent.Request().Header.SetMethod("GET")
+	agent.Request().SetRequestURI(alr.API + "/regency/" + regencyId + ".json")
+	err = agent.Parse()
 	if err != nil {
 		return res, err
 	}
 
-	for _, v := range regencies {
-		if v.ID == regencyId {
-			res = v
-			break
-		}
+	statusCode, body, _ := agent.Bytes()
+	if statusCode == 404 {
+		return res, errors.New("Not found")
+	}
+
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return res, err
 	}
 
 	return res, nil

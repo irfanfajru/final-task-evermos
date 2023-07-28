@@ -16,4 +16,5 @@ func HTTPRouteInit(r *fiber.App, containerConf *container.Container) {
 	route.CategoryRoute(api, containerConf)
 	route.TokoRoute(api, containerConf)
 	route.ProdukRoute(api, containerConf)
+	route.WilayahRoute(api)
 }
