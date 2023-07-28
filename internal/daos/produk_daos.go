@@ -23,4 +23,13 @@ type (
 		// relation one to many to foto produk
 		FotoProduk []FotoProduk `gorm:"foreignKey:IdProduk"`
 	}
+
+	FilterProduk struct {
+		Limit, Offset int
+		NamaProduk    string
+		CategoryId    uint
+		TokoId        uint
+		MaxHarga      int
+		MinHarga      int
+	}
 )

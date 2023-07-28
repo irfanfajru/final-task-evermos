@@ -99,7 +99,7 @@ func (alc *TokoUseCaseImpl) GetAllToko(ctx context.Context, params dto.FilterTok
 	}
 	res.Data = dataToko
 	res.Limit = params.Limit
-	res.Page = params.Page
+	res.Page = params.Page + 1
 	return res, nil
 }
 
