@@ -6,13 +6,15 @@ type LoginReq struct {
 }
 
 type LoginResp struct {
-	Nama         string `json:"nama"`
-	NoTelp       string `json:"no_telp"`
-	TanggalLahir string `json:"tanggal_lahir"`
-	Tentang      string `json:"tentang"`
-	Pekerjaan    string `json:"pekerjaan"`
-	Email        string `json:"email"`
-	Token        string `json:"token"`
+	Nama         string   `json:"nama"`
+	NoTelp       string   `json:"no_telp"`
+	TanggalLahir string   `json:"tanggal_lahir"`
+	Tentang      string   `json:"tentang"`
+	Pekerjaan    string   `json:"pekerjaan"`
+	Email        string   `json:"email"`
+	IdProvinsi   Province `json:"id_provinsi"`
+	IdKota       Regency  `json:"id_kota"`
+	Token        string   `json:"token"`
 }
 
 type RegisterReq struct {
@@ -38,12 +40,12 @@ type UpdateUserReq struct {
 }
 
 type User struct {
-	Nama         string `json:"nama" `
-	NoTelp       string `json:"no_telp" `
-	TanggalLahir string `json:"tanggal_lahir" `
-	Pekerjaan    string `json:"pekerjaan" `
-	Tentang      string `json:"tentang"`
-	Email        string `json:"email" `
-	IdProvinsi   string `json:"id_provinsi" `
-	IdKota       string `json:"id_kota" `
+	Nama         string   `json:"nama" `
+	NoTelp       string   `json:"no_telp" `
+	TanggalLahir string   `json:"tanggal_lahir" `
+	Pekerjaan    string   `json:"pekerjaan" `
+	Tentang      string   `json:"tentang"`
+	Email        string   `json:"email" `
+	IdProvinsi   Province `json:"id_provinsi" `
+	IdKota       Regency  `json:"id_kota" `
 }
