@@ -20,4 +20,9 @@ type (
 		// relation one to many detail trx
 		DetailTrx []DetailTrx `gorm:"foreignKey:IdTrx"`
 	}
+
+	FilterTrx struct {
+		KodeInvoice   string
+		Limit, Offset int
+	}
 )

@@ -18,6 +18,7 @@ import (
 
 type TrxUseCase interface {
 	CreateTrx(ctx context.Context, userId string, data dto.CreateTrxReq) (res uint, err *helper.ErrorStruct)
+	GetAllTrx(ctx context.Context, userId string, params dto.FilterTrx) (res dto.TrxWithPagination, err *helper.ErrorStruct)
 }
 
 type TrxUseCaseImpl struct {
@@ -177,4 +178,102 @@ func (alc *TrxUseCaseImpl) CreateTrx(ctx context.Context, userId string, data dt
 	// commit Transaction
 	Tx.Commit()
 	return resTrx, nil
+}
+
+func (alc *TrxUseCaseImpl) GetAllTrx(ctx context.Context, userId string, params dto.FilterTrx) (res dto.TrxWithPagination, err *helper.ErrorStruct) {
+	if params.Limit < 1 {
+		params.Limit = 10
+	}
+
+	if params.Page < 1 {
+		params.Page = 0
+	} else {
+		params.Page = (params.Page - 1) * params.Limit
+	}
+	resRepo, errRepo := alc.TrxRepository.GetAllTrx(ctx, userId, daos.FilterTrx{
+		Limit:       params.Limit,
+		Offset:      params.Page,
+		KodeInvoice: params.KodeInvoice,
+	})
+
+	if errors.Is(errRepo, gorm.ErrRecordNotFound) || len(resRepo) == 0 {
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusNotFound,
+			Err:  errors.New("No Data Transaksi"),
+		}
+	}
+
+	if errRepo != nil {
+		helper.Logger(currentfilepath, helper.LoggerLevelError, fmt.Sprintf("Error at GetAllTrx : %s", errRepo.Error()))
+		return res, &helper.ErrorStruct{
+			Code: fiber.StatusBadRequest,
+			Err:  errRepo,
+		}
+	}
+
+	var dataTrx []dto.Trx
+	for _, trx := range resRepo {
+		temptrx := dto.Trx{
+			ID:          trx.ID,
+			HargaTotal:  int(trx.HargaTotal),
+			KodeInvoice: trx.KodeInvoice,
+			MethodBayar: trx.MethodBayar,
+			AlamatKirim: dto.Alamat{
+				ID:           trx.Alamat.ID,
+				JudulAlamat:  trx.Alamat.JudulAlamat,
+				NamaPenerima: trx.Alamat.NamaPenerima,
+				Notelp:       trx.Alamat.Notelp,
+				DetailAlamat: trx.Alamat.DetailAlamat,
+			},
+		}
+		// foreact detail trx
+		for _, detTrx := range trx.DetailTrx {
+			log.Println(detTrx.LogProduk.Produk.FotoProduk)
+			tempDetTrx := dto.DetailTrx{
+				Produk: dto.Produk{
+					ID:            detTrx.LogProduk.ID,
+					NamaProduk:    detTrx.LogProduk.NamaProduk,
+					Slug:          detTrx.LogProduk.Slug,
+					HargaReseller: detTrx.LogProduk.HargaReseller,
+					HargaKonsumen: detTrx.LogProduk.HargaKonsumen,
+					Deskripsi:     detTrx.LogProduk.Deskripsi,
+					Toko: dto.Toko{
+						ID:       detTrx.Toko.ID,
+						NamaToko: detTrx.Toko.NamaToko,
+						UrlFoto:  detTrx.Toko.UrlFoto,
+					},
+					Category: dto.Category{
+						ID:           detTrx.LogProduk.Category.ID,
+						NamaCategory: detTrx.LogProduk.Category.NamaCategory,
+					},
+				},
+				Toko: dto.Toko{
+					ID:       detTrx.Toko.ID,
+					NamaToko: detTrx.Toko.NamaToko,
+					UrlFoto:  detTrx.Toko.UrlFoto,
+				},
+				Kuantitas:  int(detTrx.Kuantitas),
+				HargaTotal: int(detTrx.HargaTotal),
+			}
+
+			// foto produk
+			for _, fotoProduk := range detTrx.LogProduk.Produk.FotoProduk {
+				tempFotoProduk := dto.FotoProduk{
+					ID:       fotoProduk.ID,
+					IdProduk: fotoProduk.IdProduk,
+					Url:      fotoProduk.Url,
+				}
+				tempDetTrx.Produk.FotoProduk = append(tempDetTrx.Produk.FotoProduk, tempFotoProduk)
+			}
+
+			temptrx.DetailTrx = append(temptrx.DetailTrx, tempDetTrx)
+		}
+
+		dataTrx = append(dataTrx, temptrx)
+	}
+
+	res.Data = dataTrx
+	res.Limit = params.Limit
+	res.Page = params.Page + 1
+	return res, nil
 }

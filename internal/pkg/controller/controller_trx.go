@@ -11,6 +11,7 @@ import (
 
 type TrxController interface {
 	CreateTrx(ctx *fiber.Ctx) error
+	GetAllTrx(ctx *fiber.Ctx) error
 }
 
 type TrxControllerImpl struct {
@@ -36,4 +37,19 @@ func (uc *TrxControllerImpl) CreateTrx(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusCreated).JSON(helper.SuccessResponse(string(c.Method()), res))
+}
+
+func (uc *TrxControllerImpl) GetAllTrx(ctx *fiber.Ctx) error {
+	c := ctx.Context()
+	userId := utils.GetUserIdJWT(ctx)
+	filter := new(dto.FilterTrx)
+	if err := ctx.QueryParser(filter); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), err))
+	}
+
+	res, err := uc.TrxUseCase.GetAllTrx(c, userId, *filter)
+	if err != nil {
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
+	}
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
