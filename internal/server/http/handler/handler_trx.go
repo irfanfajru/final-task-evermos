@@ -24,5 +24,5 @@ func TrxRouter(r fiber.Router, containerConf *container.Container) {
 	trxAPI := r.Group("/trx")
 	trxAPI.Post("", authMiddleware, controller.CreateTrx)
 	trxAPI.Get("", authMiddleware, controller.GetAllTrx)
-
+	trxAPI.Get("/:id", authMiddleware, controller.GetTrxById)
 }

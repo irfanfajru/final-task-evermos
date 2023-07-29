@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"tugas_akhir_example/internal/helper"
 	"tugas_akhir_example/internal/pkg/dto"
 	"tugas_akhir_example/internal/pkg/usecase"
@@ -12,6 +13,7 @@ import (
 type TrxController interface {
 	CreateTrx(ctx *fiber.Ctx) error
 	GetAllTrx(ctx *fiber.Ctx) error
+	GetTrxById(ctx *fiber.Ctx) error
 }
 
 type TrxControllerImpl struct {
@@ -51,5 +53,20 @@ func (uc *TrxControllerImpl) GetAllTrx(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
 	}
+	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
+}
+
+func (uc *TrxControllerImpl) GetTrxById(ctx *fiber.Ctx) error {
+	c := ctx.Context()
+	trxId := ctx.Params("id", "")
+	userId := utils.GetUserIdJWT(ctx)
+	if trxId == "" || trxId == ":id" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(helper.ErrorResponse(string(c.Method()), errors.New("Bad request")))
+	}
+	res, err := uc.TrxUseCase.GetTrxById(c, userId, trxId)
+	if err != nil {
+		return ctx.Status(err.Code).JSON(helper.ErrorResponse(string(c.Method()), err.Err))
+	}
+
 	return ctx.Status(fiber.StatusOK).JSON(helper.SuccessResponse(string(c.Method()), res))
 }
