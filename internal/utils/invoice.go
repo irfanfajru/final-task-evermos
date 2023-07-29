@@ -13,5 +13,5 @@ func GenerateInvoiceCode() string {
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
-	return string(b)
+	return "INV-" + string(b)
 }
