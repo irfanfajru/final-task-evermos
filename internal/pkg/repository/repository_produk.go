@@ -14,6 +14,7 @@ type ProdukRepository interface {
 	GetAllProduk(ctx context.Context, params daos.FilterProduk) (res []daos.Produk, err error)
 	GetProdukById(ctx context.Context, produkId string) (res daos.Produk, err error)
 	UpdateProdukById(ctx context.Context, tokoId uint, produkId string, data daos.Produk) (res string, err error)
+	UpdateProdukByIdWithTx(ctx context.Context, tokoId uint, produkId string, data daos.Produk, Tx *gorm.DB) (res string, err error)
 	DeleteProdukById(ctx context.Context, tokoId uint, produkId string) (res string, err error)
 }
 
@@ -88,5 +89,18 @@ func (alr *ProdukRepositoryImpl) DeleteProdukById(ctx context.Context, tokoId ui
 	if err := alr.db.Model(dataProduk).Delete(&dataProduk).Error; err != nil {
 		return "Delete produk failed", err
 	}
+	return res, nil
+}
+
+func (alr *ProdukRepositoryImpl) UpdateProdukByIdWithTx(ctx context.Context, tokoId uint, produkId string, data daos.Produk, Tx *gorm.DB) (res string, err error) {
+	var dataProduk daos.Produk
+	if err = Tx.Where("id_toko = ?", tokoId).First(&dataProduk, produkId).WithContext(ctx).Error; err != nil {
+		return "Update produk failed", gorm.ErrRecordNotFound
+	}
+
+	if err := Tx.Model(dataProduk).Updates(&data).Where("id_toko = ?", tokoId).Where("id = ?", produkId).Error; err != nil {
+		return "Update produk failed", err
+	}
+
 	return res, nil
 }
